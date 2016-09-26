@@ -1,0 +1,5 @@
+V 0,02:
+    +Added makeWall(), function for adding walls to the screen.
+    +player character now clips with walls and x/y bounds.
+    +(Linux only)Arrow keys bound to movement by turning off input buffers and using getchar()
+    -Renamed squareMap(), to makeMap(), as the old usage for the function has become obsolete with the makeWall() functior
