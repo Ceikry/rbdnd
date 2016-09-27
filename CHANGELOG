@@ -1,3 +1,12 @@
+V 0.03:
+    +Added an NPCs vector
+    +Added an NPC struct 
+    +Added makeNPC(), for making very basic NPCs.
+    +Added displayNPCs(), for displaying NPCs onscreen.
+    +Added say, a function that is part of the NPC struct, for saying a message.
+    +Added printName, a function that is part of the NPC struct, for printing the NPC's name above them.
+    +Minor bugfixes
+
 V 0.02:
     +Added makeWall(), function for adding walls to the screen.
     +player character now clips with walls and x/y bounds.

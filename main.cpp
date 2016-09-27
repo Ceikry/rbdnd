@@ -10,7 +10,23 @@
 using namespace std;
 
 vector<vector<char> >y;
+vector<struct NPC>NPCs;
 char pChar = '@';
+
+struct NPC{
+    string name,message;
+    int x;
+    int ypos;
+    char mychar;
+    void printName(void){
+        for(int thisChar = 0; thisChar < name.size(); thisChar++){
+            y[ypos - 1][x - static_cast<int>(name.size() / 2) + thisChar] = static_cast<char>(name[thisChar]);
+        }
+    }
+    void say(string message){
+        cout << name << " says: " << message << endl;
+    }
+};
 
 class BufferToggle {
     private:
@@ -67,22 +83,63 @@ void printMap(){
     }
 }
 
+int abs(int x){
+    if(x > 0){
+        return x;
+    }
+    return -x;
+}
+
+void makeNPC(string name, int x, int ypos, char sym, string message=" "){
+    struct NPC npc;
+    npc.name=name;
+    npc.x = x;
+    npc.ypos = ypos;
+    npc.mychar = sym;
+    npc.message=message;
+    NPCs.push_back(npc);
+}
+
+void displayNPCs(void){
+    for(int i=0; i < NPCs.size(); i++){
+        y[NPCs[i].ypos][NPCs[i].x] = NPCs[i].mychar;
+    }
+}
+
 int main()
 {
-    BufferToggle bt;
-    bt.off();
-    string u_input;
     makeMap(25);
     int iYp = y.size() / 2;
     int iXp = y[iYp].size() / 2;
-    makeWall(0,0,1,4);
-    makeWall(1,3,3,1);
-    makeWall(6,3,3,1);
-    makeWall(9,0,1,4);
-    makeWall(1,0,8,1);
+    NPCs.reserve(10);
+    BufferToggle bt;
+    bt.off();
+    string u_input;
+    makeNPC("King Mexis", 16, 2, '&', "Ravioli Ravioli what's in the pocketoli???");
+    makeNPC("Andrei the Romanian", 20, 4, '$', "Ey mang you wan sum computer science???");
+    makeNPC("Ol'Dally", 13, 12, '%' , "Uhh, weiners.");
     while(true){
+        for(int i = 0; i < NPCs.size(); i++){
+            NPCs[i].printName();
+        }
+        displayNPCs();
         y[iYp][iXp] = pChar;
+        makeWall(0,0,1,4);
+        makeWall(1,3,3,1);
+        makeWall(6,3,3,1);
+        makeWall(9,0,1,4);
+        makeWall(1,0,8,1);
+        makeWall(7,7,5,1);
+        makeWall(14,7,5,1);
+        makeWall(7,8,1,8);
+        makeWall(18,8,1,8);
+        makeWall(7,16,12,1);
         printMap();
+        for(int i=0; i < NPCs.size(); i++){
+            if(abs(iXp - NPCs[i].x) <= 1 && abs(iYp - NPCs[i].ypos) <= 1){
+                NPCs[i].say(NPCs[i].message);
+            }
+        }
         y[iYp][iXp] = ' ';
         cout << endl << endl << endl;
         if(getchar() == '\033'){
@@ -90,7 +147,6 @@ int main()
             switch(getchar()){
                 case 'A':
                     if(y[iYp - 1][iXp] == '-' || y[iYp - 1][iXp] == '|'){
-                            cout << "That's a fucking wall, retard.\n";
                         } else {
                             if(iYp - 1 > 0){
                                 iYp = iYp - 1;
@@ -99,7 +155,6 @@ int main()
                     break;
                 case 'B':
                     if(y[iYp + 1][iXp] == '-' || y[iYp + 1][iXp] == '|'){
-                        cout << "That's a fucking wall, retard.\n";
                     } else {
                         if(iYp + 1 < y.size() - 1){
                             iYp = iYp + 1;
@@ -108,7 +163,6 @@ int main()
                     break;
                 case 'C':
                     if(y[iYp][iXp + 1] == '-' || y[iYp][iXp + 1] == '|'){
-                        cout << "That's a fucking wall, retard.\n";
                     } else {
                         if(iXp + 1 < y[0].size()){
                             iXp = iXp + 1;
@@ -117,7 +171,6 @@ int main()
                     break;
                 case 'D':
                     if(y[iYp][iXp - 1] == '-' || y[iYp][iXp - 1] == '|'){
-                        cout << "That's a fucking wall, retard.\n";
                     } else {
                         if(iXp - 1 > 0){
                         iXp = iXp - 1;
