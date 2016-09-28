@@ -11,7 +11,58 @@ using namespace std;
 
 vector<vector<char> >y;
 vector<struct NPC>NPCs;
-char pChar = '@';
+
+struct Player{
+    char pChar;
+    int x,ypos;
+    int checkCollide(int tx, int ty){
+        if (y[ty][tx] == '-' || y[ty][tx] == '|' || tx == y[0].capacity() || abs(ty - y.capacity()) == 1 || tx < 1 || ty < 1){
+            return 1;
+        }
+        return 0;
+    }
+
+    void mv(string direction){
+            if(direction == "down"){
+                if(checkCollide(x, ypos + 1) == 0){
+                    ypos = ypos + 1;
+                }
+            } else if(direction == "up"){
+                if(checkCollide(x, ypos - 1) == 0){
+                    ypos = ypos - 1;
+                }
+            } else if(direction == "left"){
+                if(checkCollide(x - 1, ypos) == 0){
+                    x -= 1;
+                }
+            } else if(direction == "right"){
+                if(checkCollide(x + 1, ypos) == 0){
+                    x += 1;
+                }
+            } else if(direction == "upright"){
+                if(checkCollide(x + 1, ypos - 1) == 0){
+                    x += 1;
+                    ypos -= 1;
+                }
+            } else if(direction == "upleft"){
+                if(checkCollide(x - 1, ypos - 1) == 0){
+                    x -= 1;
+                    ypos -= 1;
+                }
+            } else if(direction == "downright"){
+                if(checkCollide(x + 1, ypos + 1) == 0){
+                    x += 1;
+                    ypos += 1;
+                }
+            } else if(direction == "downleft"){
+                if(checkCollide(x - 1, ypos + 1) == 0){
+                    x -= 1;
+                    ypos += 1;
+                }
+            }
+    }
+
+};
 
 struct NPC{
     string name,message;
@@ -25,6 +76,76 @@ struct NPC{
     }
     void say(string message){
         cout << name << " says: " << message << endl;
+    }
+
+    int checkCollide(int tx, int ty){
+        if (y[ty][tx] == '-' || y[ty][tx] == '|' || tx == y[0].capacity() || abs(ty - y.capacity()) == 1 || tx < 1 || ty < 1){
+            return 1;
+        }
+        return 0;
+    }
+
+    void mv(string direction){
+            if(direction == "down"){
+                if(checkCollide(x, ypos + 1) == 0){
+                    ypos = ypos + 1;
+                }
+            } else if(direction == "up"){
+                if(checkCollide(x, ypos - 1) == 0){
+                    ypos = ypos - 1;
+                }
+            } else if(direction == "left"){
+                if(checkCollide(x - 1, ypos) == 0){
+                    x -= 1;
+                }
+            } else if(direction == "right"){
+                if(checkCollide(x + 1, ypos) == 0){
+                    x += 1;
+                }
+            } else if(direction == "upright"){
+                if(checkCollide(x + 1, ypos - 1) == 0){
+                    x += 1;
+                    ypos -= 1;
+                }
+            } else if(direction == "upleft"){
+                if(checkCollide(x - 1, ypos - 1) == 0){
+                    x -= 1;
+                    ypos -= 1;
+                }
+            } else if(direction == "downright"){
+                if(checkCollide(x + 1, ypos + 1) == 0){
+                    x += 1;
+                    ypos += 1;
+                }
+            } else if(direction == "downleft"){
+                if(checkCollide(x - 1, ypos + 1) == 0){
+                    x -= 1;
+                    ypos += 1;
+                }
+            }
+    }
+
+    void findPath(int tx, int ty){
+        int distanceX = tx - x;
+        int distanceY = ty - ypos;
+        if(abs(distanceX) <= 2 && abs(distanceY) <= 2){
+        } else if(distanceX > 0 && distanceY > 0){
+            mv("downright");
+        } else if(distanceX < 0 && distanceY > 0){
+            mv("downleft");
+        } else if(distanceX > 0 && distanceY < 0){
+            mv("upright");
+        } else if(distanceX < 0 && distanceY < 0){
+            mv("upleft");
+        } else if(distanceX < 1 && distanceY == 0){
+            mv("left");
+        } else if(distanceX > 1 && distanceY == 0){
+            mv("right");
+        } else if(distanceX == 0 && distanceY > 1){
+            mv("down");
+        } else if(distanceX == 0 && distanceY < 1){
+            mv("up");
+        }
     }
 };
 
@@ -108,9 +229,11 @@ void displayNPCs(void){
 
 int main()
 {
+    struct Player player;
+    player.pChar='@';
     makeMap(25);
-    int iYp = y.size() / 2;
-    int iXp = y[iYp].size() / 2;
+    player.ypos = y.size() / 2;
+    player.x = y[player.ypos].size() / 2;
     NPCs.reserve(10);
     BufferToggle bt;
     bt.off();
@@ -119,11 +242,12 @@ int main()
     makeNPC("Andrei the Romanian", 20, 4, '$', "Ey mang you wan sum computer science???");
     makeNPC("Ol'Dally", 13, 12, '%' , "Uhh, weiners.");
     while(true){
+        y[player.ypos][player.x] = player.pChar;
         for(int i = 0; i < NPCs.size(); i++){
-            NPCs[i].printName();
+             y[NPCs[i].ypos][NPCs[i].x] = ' ';
+            NPCs[i].findPath(player.x,player.ypos);
         }
         displayNPCs();
-        y[iYp][iXp] = pChar;
         makeWall(0,0,1,4);
         makeWall(1,3,3,1);
         makeWall(6,3,3,1);
@@ -136,46 +260,26 @@ int main()
         makeWall(7,16,12,1);
         printMap();
         for(int i=0; i < NPCs.size(); i++){
-            if(abs(iXp - NPCs[i].x) <= 1 && abs(iYp - NPCs[i].ypos) <= 1){
+            if(abs(player.x - NPCs[i].x) <= 1 && abs(player.ypos - NPCs[i].ypos) <= 1){
                 NPCs[i].say(NPCs[i].message);
             }
         }
-        y[iYp][iXp] = ' ';
+        y[player.ypos][player.x] = ' ';
         cout << endl << endl << endl;
         if(getchar() == '\033'){
             getchar();
             switch(getchar()){
                 case 'A':
-                    if(y[iYp - 1][iXp] == '-' || y[iYp - 1][iXp] == '|'){
-                        } else {
-                            if(iYp - 1 > 0){
-                                iYp = iYp - 1;
-                            }
-                        }
+                    player.mv("up");
                     break;
                 case 'B':
-                    if(y[iYp + 1][iXp] == '-' || y[iYp + 1][iXp] == '|'){
-                    } else {
-                        if(iYp + 1 < y.size() - 1){
-                            iYp = iYp + 1;
-                        }
-                    }
+                    player.mv("down");
                     break;
                 case 'C':
-                    if(y[iYp][iXp + 1] == '-' || y[iYp][iXp + 1] == '|'){
-                    } else {
-                        if(iXp + 1 < y[0].size()){
-                            iXp = iXp + 1;
-                        }
-                    }
+                    player.mv("right");
                     break;
                 case 'D':
-                    if(y[iYp][iXp - 1] == '-' || y[iYp][iXp - 1] == '|'){
-                    } else {
-                        if(iXp - 1 > 0){
-                        iXp = iXp - 1;
-                        }
-                    }
+                    player.mv("left");
                     break;
             }
         }
