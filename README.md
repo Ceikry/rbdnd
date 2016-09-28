@@ -4,5 +4,10 @@ For the 2d plane, I have a vector, y, and for each element in this vector I have
 <br/>
 These vectors can then be populated with chars to add elements to the map.
 <br/>
-Current time spent on project: approximately 15-20 minutes.....
+Current time spent on project: approximately 5-7 hours...
+<br/>
+<br/>
+Below is a gif demonstration of pathfinding, basic actions, etc:
+<br/>
+<img src="game.gif">
 
